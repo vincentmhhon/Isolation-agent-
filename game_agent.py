@@ -35,7 +35,8 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+    #raise NotImplementedError
+    return 1
 
 
 def custom_score_2(game, player):
@@ -209,11 +210,80 @@ class MinimaxPlayer(IsolationPlayer):
                 each helper function or else your agent will timeout during
                 testing.
         """
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return -1, -1
+
+        best_score = float('-inf')
+        for move in legal_moves:
+            temp_score = self.mini_value(game.forecast_move(move), depth - 1)
+            if temp_score > best_score:
+                best_score = temp_score
+                best_move = move
+
+        return best_move
+
+    def max_value(self, state, depth):
+        """
+        Obtain the maximized value for a given state
+                Parameters
+                ----------
+                state : isolation.Board
+                    An instance of the Isolation game `Board` class representing the
+                    current game state
+
+                depth : int
+                    Depth is an integer representing the maximum number of plies to
+                    search in the game tree before aborting
+
+                Returns
+                -------
+                float
+                    The maximized value
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        legal_moves = state.get_legal_moves()
+        if depth == 0 or not legal_moves:
+                return self.score(state, self)
+
+        v = float('-inf')
+        for m in legal_moves:
+            v = max(v, self.mini_value(state.forecast_move(m), depth - 1))
+        return v
+
+    def mini_value(self, state, depth):
+        """
+        Obtain the minimized value for a given state
+                Parameters
+                ----------
+                state : isolation.Board
+                    An instance of the Isolation game `Board` class representing the
+                    current game state
+
+                depth : int
+                    Depth is an integer representing the maximum number of plies to
+                    search in the game tree before aborting
+
+                Returns
+                -------
+                float
+                    The minimized value
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        legal_moves = state.get_legal_moves()
+        if depth == 0 or not legal_moves:
+            return self.score(state, self)
+
+        v = float('+inf')
+        for m in legal_moves:
+            v = min(v, self.max_value(state.forecast_move(m), depth - 1))
+        return v
 
 
 class AlphaBetaPlayer(IsolationPlayer):
