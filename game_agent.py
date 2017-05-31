@@ -324,8 +324,23 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        # Initialize the best move so that this function returns something
+        # in case the search fails due to timeout
+        best_move = (-1, -1)
+        depth = 0
+
+        try:
+            # The try/except block will automatically catch the exception
+            # raised when the timer is about to expire.
+            while True:
+                best_move = self.alphabeta(game, depth)
+                depth += 1
+
+        except SearchTimeout:
+            return best_move  # Handle any actions required after timeout as needed
+
+        # Return the best move from the last completed search iteration
+        return best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -375,5 +390,96 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return -1, -1
+
+        best_score = float('-inf')
+        for move in legal_moves:
+            temp_score = self.mini_value(game.forecast_move(move), depth - 1, best_score, beta)
+            if temp_score > best_score:
+                best_score = temp_score
+                best_move = move
+        return best_move
+
+    def max_value(self, state, depth, alpha, beta):
+            """
+            Obtain the maximized value for a given state
+                    Parameters
+                    ----------
+                    state : isolation.Board
+                        An instance of the Isolation game `Board` class representing the
+                        current game state
+
+                    depth : int
+                        Depth is an integer representing the maximum number of plies to
+                        search in the game tree before aborting
+                    
+                    alpha : float
+                        Alpha limits the lower bound of search on minimizing layers
+
+                    beta : float
+                        Beta limits the upper bound of search on maximizing layers
+                        
+                    Returns
+                    -------
+                    float
+                        The maximized value
+            """
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise SearchTimeout()
+            legal_moves = state.get_legal_moves()
+
+            if depth == 0 or not legal_moves:
+                return self.score(state, self)
+
+            v = float('-inf')
+            for m in legal_moves:
+                v = max(v, self.mini_value(state.forecast_move(m), depth - 1, alpha, beta))
+                if v >= beta:
+                    return v
+
+                alpha = max(alpha, v)
+            return v
+
+    def mini_value(self, state, depth, alpha, beta):
+
+            """
+            Obtain the minimized value for a given state
+                    Parameters
+                    ----------
+                    state : isolation.Board
+                        An instance of the Isolation game `Board` class representing the
+                        current game state
+
+                    depth : int
+                        Depth is an integer representing the maximum number of plies to
+                        search in the game tree before aborting
+                     
+                    alpha : float
+                        Alpha limits the lower bound of search on minimizing layers
+
+                    beta : float
+                        Beta limits the upper bound of search on maximizing layers
+
+                    Returns
+                    -------
+                    float
+                        The minimized value
+            """
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise SearchTimeout()
+            legal_moves = state.get_legal_moves()
+
+            if depth == 0 or not legal_moves:
+                return self.score(state, self)
+
+            v = float('+inf')
+            for m in legal_moves:
+                v = min(v, self.max_value(state.forecast_move(m), depth - 1, alpha, beta))
+                if v <= alpha:
+                    return v
+
+                beta = min(beta, v)
+
+            return v
