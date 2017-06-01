@@ -45,7 +45,6 @@ def custom_score(game, player):
     return 1
 
 
-
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -244,7 +243,7 @@ class MinimaxPlayer(IsolationPlayer):
         best_score = float('-inf')
         for move in legal_moves:
             temp_score = self.mini_value(game.forecast_move(move), depth - 1)
-            if temp_score > best_score:
+            if temp_score >= best_score:
                 best_score = temp_score
                 best_move = move
 
@@ -419,17 +418,18 @@ class AlphaBetaPlayer(IsolationPlayer):
         legal_moves = game.get_legal_moves()
         best_move = (-1, -1)
         best_score = float('-inf')
+
         for move in legal_moves:
             temp_score = self.mini_value(game.forecast_move(move), depth - 1, alpha, beta)
             if temp_score >= best_score:
                 best_score = temp_score
                 best_move = move
 
+            alpha = best_score
             #pruning
-            if best_score >= beta:
+            if alpha >= beta:
                 return best_move
 
-            alpha = max(alpha, best_score)
         return best_move
 
     def max_value(self, state, depth, alpha, beta):
