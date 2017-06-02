@@ -42,8 +42,8 @@ def custom_score(game, player):
 
     own_moves = len(game.get_legal_moves(player))
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    return 1
 
+    return float(own_moves**2 - opp_moves)
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -73,9 +73,11 @@ def custom_score_2(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    w, h = game.width / 2., game.height / 2.
-    y, x = game.get_player_location(player)
-    return 1
+    spaces = game.get_blank_spaces()
+    own_legal_moves = game.get_legal_moves(player)
+
+    intersect = [val for val in spaces if val in own_legal_moves]
+    return float(len(intersect))
 
 
 def custom_score_3(game, player):
@@ -106,9 +108,10 @@ def custom_score_3(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    w, h = game.width / 2., game.height / 2.
-    y, x = game.get_player_location(player)
-    return 1
+    own_legal_moves = game.get_legal_moves(player)
+    opp_legal_moves = game.get_legal_moves(game.get_opponent(player))
+    intersect = [val for val in own_legal_moves if val in opp_legal_moves]
+    return float(len(intersect))
 
 
 class IsolationPlayer:
