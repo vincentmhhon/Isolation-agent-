@@ -72,12 +72,10 @@ def custom_score_2(game, player):
 
     if game.is_winner(player):
         return float("inf")
+    spaces = len(game.get_blank_spaces())
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
 
-    spaces = game.get_blank_spaces()
-    own_legal_moves = game.get_legal_moves(player)
-
-    intersect = [val for val in spaces if val in own_legal_moves]
-    return float(len(intersect))
+    return float(spaces - opp_moves)
 
 
 def custom_score_3(game, player):
