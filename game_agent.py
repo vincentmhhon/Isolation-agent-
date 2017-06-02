@@ -2,7 +2,7 @@
 test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
-import random
+from random import randint
 
 
 class SearchTimeout(Exception):
@@ -44,6 +44,7 @@ def custom_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
 
     return float(own_moves**2 - opp_moves)
+
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -235,10 +236,9 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
+        best_move = (-1, -1)
         legal_moves = game.get_legal_moves()
-        if not legal_moves:
-            return -1, -1
-        else:
+        if legal_moves:
             best_move = legal_moves[0]
 
         best_score = float('-inf')
@@ -352,7 +352,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         best_move = (-1, -1)
         legal_moves = game.get_legal_moves()
         if legal_moves:
-            best_move = legal_moves[random.randint(0, (len(legal_moves) - 1))]
+            best_move = legal_moves[randint(0, len(legal_moves) - 1)]
 
         try:
             # The try/except block will automatically catch the exception
